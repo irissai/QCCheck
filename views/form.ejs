@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>แบบฟอร์มตรวจสอบคุณภาพ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <style>
+        body {
+      font-family: 'Sarabun', sans-serif;
+      padding: 30px;
+      background-color: #f7f7f7;
+    }
+
+    /* ใช้เมื่อคุณอยากให้ข้อความบางส่วนเป็น ExtraLight */
+    .sarabun-extralight {
+      font-weight: 200;
+    }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 900px;
+            margin: auto;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 70%;
+        }
+        .item-block {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            margin-right: 10px;
+        }
+        .label-status{
+            display: inline-block;
+            width: 50px;
+            margin-left: 25px;
+            margin-right: 5px;
+        }
+        .select{
+            display: inline-block;
+            width: 12%;
+        }
+        
+        .select.passed {
+    background-color: #d4edda; /* เขียวอ่อน */
+}
+.date{
+    width: 12%;
+}
+
+.select.failed {
+    background-color: #f8d7da; /* แดงอ่อน */
+}
+
+    .failed {
+        background-color: none; /* แดงอ่อน */
+    } 
+    </style>
+</head>
+<body>
+    <h2 style="text-align:center;">แบบฟอร์มตรวจสอบคุณภาพ</h2>
+
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <label >โครงการ: </label>
+        <input type="text" name="project" required><br>
+        <label>แปลงเลขที่: </label>
+        <input type="text" name="parcel" required><br>
+        <label>ตรวจวันที่: </label>
+        <input class="date" type="date" name="date" required><br>
+        <label>ลูกค้า: </label>
+        <input type="text" name="customer" required><br>
+        <label>ตรวจสอบโดย: </label>
+        <input type="text" name="inspector" required><br><br>
+
+        <div id="item-container">
+            <!-- จะมีรายการฟอร์มอันแรกมาให้ -->
+        </div>
+
+        <button type="button" onclick="addItem()">เพิ่มรายการ</button>
+        <button type="submit">บันทึกและสร้าง PDF</button>
+    </form>
+
+    <script>
+     let itemCount = 0; // เริ่มนับจาก 0
+
+     function addItem(showDelete = true) {
+    // นับจำนวนรายการปัจจุบันจาก DOM
+    const container = document.getElementById("item-container");
+    const existingItems = container.querySelectorAll(".item-block");
+    const currentIndex = existingItems.length + 1;
+
+    const div = document.createElement("div");
+    div.className = "item-block";
+    div.innerHTML = `
+    <label for="item_no_${itemCount}">รายการที่: <span class="item-number" value="${itemCount}">${currentIndex}</span></label>
+    
+    <label class="label-status">สถานะ: </label>
+        <select class="select status-select" name="status_${currentIndex}" required>
+            <option value="ผ่าน">ผ่าน</option>
+            <option value="ไม่ผ่าน">ไม่ผ่าน</option>
+        </select><br>
+        <label>แนบรูป: </label>
+        <input type="file" name="image_${currentIndex}" accept="image/*"><br>
+        <label>หัวข้อ: </label>
+        <input type="text" name="title_${currentIndex}"><br>
+        <label>งาน: </label> 
+        <input type="text" name="work_${currentIndex}"><br>
+        <label>รายการ: </label>
+        <input type="text" name="item_${currentIndex}"><br>
+        <label>หมายเหตุ: </label>
+        <textarea name="note_${currentIndex}" rows="2" style="display: inline-block; width: 70%; vertical-align: top;"></textarea><br>
+        ${showDelete ? '<button type="button" onclick="removeItem(this)" style="background: #dc3545;">ลบรายการ</button>' : ''}
+    `;
+    container.appendChild(div);
+    updateItemNumbers();
+    updateFormData(); // รีเฟรชข้อมูลฟอร์ม
+    // ตรวจจับ select เปลี่ยนสี
+    const select = div.querySelector('.status-select');
+    select.addEventListener('change', () => {
+        select.classList.remove('passed', 'failed');
+        if (select.value === 'ผ่าน') {
+            select.classList.add('passed');
+        } else {
+            select.classList.add('failed');
+        }
+    });
+
+    // เรียกใช้สีครั้งแรก
+    select.dispatchEvent(new Event('change'));
+}
+
+    
+function removeItem(button) {
+    const itemBlock = button.closest('.item-block');
+    if (itemBlock) {
+        itemBlock.remove();
+    }
+    updateItemNumbers();  // อัปเดตหมายเลขรายการ
+    updateFormData(); // รีเฟรชข้อมูลฟอร์ม
+}
+
+// ฟังก์ชันที่จะรีเฟรชข้อมูลที่ถูกส่งไปในฟอร์ม
+function updateFormData() {
+    const form = document.querySelector('form');
+    const formData = new FormData(form);
+    // ตอนนี้ formData จะเก็บข้อมูลที่อัปเดตทั้งหมดในฟอร์ม
+    // ตรวจสอบค่า formData ที่ถูกส่งไป
+    console.log('Updated Form Data:', Array.from(formData.entries()));
+}
+
+function updateItemNumbers() {
+  const items = document.querySelectorAll('.item-block');
+  console.log('Number of items:', items.length);
+
+  items.forEach((item, index) => {
+    const currentIndex = index + 1;                       // ลำดับใหม่ 1‑based
+    item.querySelector('.item-number').textContent = currentIndex;
+
+    // --- รีเซ็ต name ของทุกฟิลด์ในบล็อกนี้ ---
+    item.querySelectorAll('[name]').forEach(el => {
+      const base = el.name.split('_')[0];        // 'status' | 'title' | ...
+      el.name = `${base}_${currentIndex}`;                // กำหนดชื่อใหม่ไม่ซ้ำ
+    });
+  });
+}
+
+
+
+    
+        // เรียกแค่รายการแรกแบบไม่มีปุ่มลบ
+        window.onload = () => addItem(false);
+    </script>
+    
+    
+</body>
+</html>
