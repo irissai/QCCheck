@@ -56,11 +56,20 @@ app.post('/', upload.fields(imageFields), (req, res) => {
     const filename = `QC_Report_${moment().format('YYYYMMDDHHmmss')}.pdf`;
     const filepath = path.join(__dirname, filename);
   
-    generatePDF({ project, customer, parcel, date, inspector, items }, filepath, () => {
-      res.download(filepath, filename, () => {
-        fs.unlinkSync(filepath);
-      });
-    });
+   // ใหม่ – ย้ายการลบไฟล์ไปทำหลัง response ปิด
+generatePDF({ project, customer, parcel, date, inspector, items }, filepath, () => {
+
+  // ส่งไฟล์ให้ดาวน์โหลด (ตั้ง header เป็น attachment ให้อัตโนมัติ)
+  res.download(filepath, filename, (err) => {
+    if (err) console.error(err);
+  });
+
+  // ลบไฟล์หลัง client รับเสร็จจริง ๆ
+  res.on('finish', () => {
+    fs.unlink(filepath, () => {});
+  });
+});
+
   });
 
   function generatePDF(data, filepath, callback) {
