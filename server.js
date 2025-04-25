@@ -122,7 +122,7 @@ const backgroundHeight = 80; // ความสูงของพื้นที
 doc.rect(marginX, startY - 10, pageW - 2 * marginX, backgroundHeight).fill('#e0f0ff'); // เติมพื้นหลังสีฟ้า
 
 /* 4. วาด label (ตัวหนา) + value (ปกติ) ต่อเนื่องกัน */
-doc.font('THSarabun-Bold').fillColor('#000000').text('แบบบ้าน: ', startX, startY, { continued: true });  // ใช้สีดำ
+doc.font('THSarabun-Bold').fillColor('#000000').text('แบบบ้าน ', startX, startY, { continued: true });  // ใช้สีดำ
 doc.font('THSarabunNew').fillColor('#000000').text(houseType); // ใช้สีดำ
 
 /* 5. บรรทัดถัดไป—ชั้นที่ */
@@ -199,19 +199,19 @@ const formattedDate = formatDate(dateObj);
 
     doc.moveDown();
     doc.fontSize(18);
-    doc.font('THSarabun-Bold').text(`โครงการ:`, { continued: true });
+    doc.font('THSarabun-Bold').text(`โครงการ :`, { continued: true });
     doc.font('THSarabunNew').text(` ${projectName}`);
-    doc.font('THSarabun-Bold').text(`แปลงเลขที่:`, { continued: true });
+    doc.font('THSarabun-Bold').text(`แปลงเลขที่ :`, { continued: true });
     doc.font('THSarabunNew').text(` ${parcel}`);
     // doc.font('THSarabun-Bold').text(`ตรวจครั้งที่:`, { continued: true });
     // doc.font('THSarabunNew').text(` ${round}`);
-    doc.font('THSarabun-Bold').text(`วันที่ตรวจ (รอบแรก):`, { continued: true });
+    doc.font('THSarabun-Bold').text(`วันที่ตรวจ (รอบแรก) :`, { continued: true });
     doc.font('THSarabunNew').text(` ${formattedDate}`);
-    doc.font('THSarabun-Bold').text(`วันที่ตรวจ (รอบสอง):`);
+    doc.font('THSarabun-Bold').text(`วันที่ตรวจ (รอบสอง) :`);
     // doc.font('THSarabunNew').text(` ${date}`);
-    doc.font('THSarabun-Bold').text(`ลูกค้า:`, { continued: true });
+    doc.font('THSarabun-Bold').text(`ลูกค้า :`, { continued: true });
     doc.font('THSarabunNew').text(` ${customer}`);
-    doc.font('THSarabun-Bold').text(`ตรวจสอบโดย:`, { continued: true });
+    doc.font('THSarabun-Bold').text(`ตรวจสอบโดย :`, { continued: true });
     doc.font('THSarabunNew').text(` ${inspector}`);
 
     doc.moveDown(1);
@@ -254,13 +254,13 @@ printPageNumber(pageNum);
 
   let contentH = labelH + padTop + imgH + padY;  // label + margin + image + margin
   const kvRows = [
-    ['สถานะ', item.status || '-'],
-    ['หัวข้อ', item.title  || '-'],
-    ['งาน'  ,  item.work   || '-'],
-    ['รายการ', item.item   || '-'],
-    ['หมายเหตุ', item.note || '-'],
+    ['สถานะ :', item.status || '-'],
+    ['หัวข้อ :', item.title  || '-'],
+    ['งาน :'  ,  item.work   || '-'],
+    ['รายการ :', item.item   || '-'],
+    ['หมายเหตุ :', item.note || '-'],
     // ['ผลการตรวจสอบ (รอบสอง)', item.note || '-']
-    ['ผลการตรวจสอบ (รอบสอง)', '\u25A1  ผ่าน\t\t\u25A1 ไม่ผ่าน']
+    ['ผลการตรวจสอบ (รอบสอง) :', '\u25A1 ผ่าน\t\t\t\u25A1 ไม่ผ่าน']
 
   ];
 
@@ -373,28 +373,28 @@ rowInfo.forEach(({k, v, h}) => {
 
   doc.rect(x + keyW, rowY, valW, h).stroke('#cccccc');
 
-  if (k === 'สถานะ') {
+  if (k === 'สถานะ :') {
     const clr = v === 'ผ่าน' ? '#00bf62' : '#f93434';
     doc.save().rect(x + keyW, rowY, valW, h).fill(clr).restore();
   } else {
     doc.fillColor('black');
   }
+// ✅ เงื่อนไขพิเศษ: กล่องเช็ค "ผ่าน / ไม่ผ่าน"
+if (k === 'ผลการตรวจสอบ (รอบสอง) :') {
+  const baseX = x + keyW + 4;
+  const baseY = rowY + 6;
 
-  // ✅ เงื่อนไขพิเศษ: กล่องเช็ค "ผ่าน / ไม่ผ่าน"
-  if (k === 'ผลการตรวจสอบ (รอบสอง)') {
-    const baseX = x + keyW + 4;
-    const baseY = rowY + 6;
+  doc.font('DejaVuSans').text('\u25A1', baseX, baseY, { continued: true });
+  doc.font('THSarabunNew').text(' ผ่าน', { continued: false });
+  
+  doc.font('DejaVuSans').text('\u25A1', baseX + 60, baseY, { continued: true });  // ปรับตรงนี้เพื่อขยับ
+  doc.font('THSarabunNew').text(' ไม่ผ่าน');
 
-    doc.font('DejaVuSans').text('\u25A1', baseX, baseY, { continued: true });
-    doc.font('THSarabunNew').text(' ผ่าน', { continued: false });
-    
-    doc.font('DejaVuSans').text('\u25A1', baseX + 40, baseY, { continued: true });  // ปรับตรงนี้เพื่อขยับ
-    doc.font('THSarabunNew').text(' ไม่ผ่าน');
+} else {
+  doc.font('THSarabunNew')
+     .text(v || '-', x + keyW + 4, rowY + 4, { width: valW - 8 });
+}
 
-  } else {
-    doc.font('THSarabunNew')
-       .text(v || '-', x + keyW + 4, rowY + 4, { width: valW - 8 });
-  }
 
   rowY += h;
 });
