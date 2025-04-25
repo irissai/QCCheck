@@ -119,7 +119,7 @@ const startY = doc.y;   // ตำแหน่ง Y ปัจจุบัน
 
 // เพิ่มพื้นหลังสีฟ้า
 const backgroundHeight = 80; // ความสูงของพื้นที่พื้นหลัง
-doc.rect(marginX, startY - 10, pageW - 2 * marginX, backgroundHeight).fill('#ADD8E6'); // เติมพื้นหลังสีฟ้า
+doc.rect(marginX, startY - 10, pageW - 2 * marginX, backgroundHeight).fill('#e0f0ff'); // เติมพื้นหลังสีฟ้า
 
 /* 4. วาด label (ตัวหนา) + value (ปกติ) ต่อเนื่องกัน */
 doc.font('THSarabun-Bold').fillColor('#000000').text('แบบบ้าน: ', startX, startY, { continued: true });  // ใช้สีดำ
