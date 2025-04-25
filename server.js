@@ -168,7 +168,7 @@ function printPageNumber(n) {
   const bottomY = doc.page.height - doc.page.margins.bottom + 5;
   doc.fontSize(12)
      .fillColor('black')
-     .text(`page ${n}`, rightX, bottomY, { align: 'right' });
+     .text(`Page ${n}`, rightX, bottomY, { align: 'right' });
 }
 
 // พิมพ์หมายเลขหน้าในหน้าแรก

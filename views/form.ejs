@@ -374,18 +374,22 @@ ${showDelete
         }
         // ตรวจสอบเมื่อมีการเปลี่ยนแปลงเลือกใน select
         document.getElementById('project').addEventListener('change', function () {
-            const projectSelect = document.getElementById('project');
-            const otherOption = 'other'; // ตัวเลือก "อื่น ๆ"
-// ถ้าคุณเลือก "อื่น ๆ" ต้องแนบค่าเพิ่มเติมจาก `otherProject`
-            // ถ้าเลือก "อื่น ๆ"
-            if (projectSelect.value === otherOption) {
-                document.getElementById('otherProject').style.display = 'block';  // แสดงฟิลด์กรอกข้อมูล
-                document.getElementById('otherProjectLabel').style.display = 'block';  // แสดง label
-            } else {
-                document.getElementById('otherProject').style.display = 'none';  // ซ่อนฟิลด์กรอกข้อมูล
-                document.getElementById('otherProjectLabel').style.display = 'none';  // ซ่อน label
-            }
-        });
+        const projectSelect = document.getElementById('project');
+        const otherInput = document.getElementById('otherProject'); // ต้องกำหนดก่อนใช้
+        const otherLabel = document.getElementById('otherProjectLabel');
+        const otherOption = 'other';
+
+        if (projectSelect.value === otherOption) {
+            otherInput.style.display = 'block';
+            otherLabel.style.display = 'block';
+            otherInput.required = true; // ตั้งให้ required เมื่อเลือก "อื่น ๆ"
+        } else {
+            otherInput.style.display = 'none';
+            otherLabel.style.display = 'none';
+            otherInput.required = false; // ไม่ required ถ้าไม่ได้เลือก "อื่น ๆ"
+            otherInput.value = ''; // เคลียร์ค่าที่กรอกไว้ (optional)
+        }
+    });
 
         function removeItem(button) {
             const itemBlock = button.closest('.item-block');
